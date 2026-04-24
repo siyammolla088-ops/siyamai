@@ -35,7 +35,10 @@ export default function Home() {
         prompt: hiddenEnhancedPrompt 
       });
       
-      const imageUrl = result.data[0]?.url || result.data[0];
+      // টাইপ এরর ফিক্স করতে (result.data as any) ব্যবহার করা হয়েছে
+      // @ts-ignore
+      const imageUrl = (result.data as any)[0]?.url || (result.data as any)[0];
+      
       setMessages((prev) => [...prev, { role: "ai", content: imageUrl }]);
     } catch (error) {
       console.error("Error:", error);
