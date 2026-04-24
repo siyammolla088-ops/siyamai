@@ -1,6 +1,3 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  /* এখানে আপনার কনফিগ অপশন থাকে */
-};
-
+const nextConfig = {};
 export default nextConfig;
