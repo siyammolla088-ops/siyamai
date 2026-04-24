@@ -20,14 +20,15 @@ export default function Home() {
     setPrompt("");
 
     try {
-      const enhancedPrompt = `${userPrompt}, 8k resolution, highly detailed, masterpiece`;
       const client = await Client.connect("siyammolla404/Siyam");
-      const result = await client.predict("/generate_image", { prompt: enhancedPrompt });
+      const result = await client.predict("/generate_image", { 
+        prompt: `${userPrompt}, 8k resolution, cinematic, high quality` 
+      });
       // @ts-ignore
       const imageUrl = (result.data as any)[0]?.url || (result.data as any)[0];
       setMessages((prev) => [...prev, { role: "ai", content: imageUrl }]);
     } catch (error) {
-      setMessages((prev) => [...prev, { role: "ai", content: "Error generating image." }]);
+      setMessages((prev) => [...prev, { role: "ai", content: "Error! Try again." }]);
       setCredits((prev) => prev + 1);
     } finally {
       setLoading(false);
@@ -35,101 +36,91 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-white text-gray-900 font-sans overflow-hidden">
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#ffffff', color: '#1f1f1f', fontFamily: 'sans-serif' }}>
       
-      {/* Sidebar - Desktop Only */}
-      <aside className="w-64 bg-[#f0f4f9] hidden md:flex flex-col p-4 border-r border-gray-200">
-        <button className="flex items-center gap-3 bg-[#e9eef6] hover:bg-[#dde3ea] p-3 rounded-xl transition mb-8 font-medium">
-          <FaPen className="text-gray-600" /> New Chat
+      {/* Sidebar - Gemini Style */}
+      <aside style={{ width: '280px', backgroundColor: '#f0f4f9', display: 'flex', flexDirection: 'column', padding: '16px', borderRight: '1px solid #e3e3e3' }}>
+        <button style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '16px', backgroundColor: '#e9eef6', border: 'none', cursor: 'pointer', fontWeight: '500', marginBottom: '32px' }}>
+          <FaPen /> New Chat
         </button>
-        <div className="flex-1 overflow-y-auto space-y-2">
-          <p className="text-sm font-semibold text-gray-500 px-2 uppercase tracking-wider">History</p>
-          <div className="flex items-center gap-3 p-2 hover:bg-[#dde3ea] rounded-lg cursor-pointer text-sm">
-            <FaHistory className="text-gray-400" /> Previous Task...
+        
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          <p style={{ fontSize: '12px', fontWeight: '600', color: '#5f6368', paddingLeft: '8px', marginBottom: '16px' }}>RECENT</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>
+            <FaHistory color="#5f6368" />
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Your Image History...</span>
           </div>
         </div>
-        <div className="mt-auto border-t border-gray-300 pt-4 space-y-3">
-          <div className="flex items-center gap-3 px-2">
-            <BiUserCircle className="text-3xl text-blue-600" />
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold truncate">Siyam Molla</p>
-              <p className="text-xs text-blue-600">Credits: {credits}</p>
+
+        {/* User Info & Credits */}
+        <div style={{ borderTop: '1px solid #e3e3e3', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <BiUserCircle size={32} color="#1a73e8" />
+            <div>
+              <p style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>Siyam Molla</p>
+              <p style={{ margin: 0, fontSize: '12px', color: '#1a73e8', fontWeight: 'bold' }}>{credits} Credits left</p>
             </div>
           </div>
-          <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition">Get Credit</button>
-          <button className="flex items-center gap-2 text-gray-600 hover:text-black transition p-2 text-sm"><FaCog /> Settings</button>
+          <button style={{ width: '100%', padding: '10px', backgroundColor: '#1a73e8', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginBottom: '8px' }}>
+            Get Credit
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#5f6368', fontSize: '14px', cursor: 'pointer' }}>
+            <FaCog /> Settings
+          </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col relative h-full bg-white">
-        
-        {/* Header - Siyam AI */}
-        <header className="p-4 flex justify-between items-center md:px-10">
-          <span className="text-xl font-bold text-gray-700">Siyam AI</span>
-          <div className="md:hidden text-2xl text-blue-600"><BiUserCircle /></div>
+      {/* Main Chat Area */}
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <header style={{ padding: '16px 24px', fontSize: '20px', fontWeight: '500', color: '#5f6368' }}>
+          Siyam AI
         </header>
 
-        {/* Chat / Result Display */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-20 lg:px-40 pb-40">
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 10%' }}>
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col justify-center items-center text-center">
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent mb-4">
+            <div style={{ height: '80%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
+              <h1 style={{ fontSize: '56px', fontWeight: '500', background: 'linear-gradient(to right, #4285f4, #9b72cb, #d96570)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', margin: '0' }}>
                 Hello, Siyam
               </h1>
-              <p className="text-xl md:text-2xl text-gray-400">Describe what you want to create today.</p>
+              <p style={{ fontSize: '56px', fontWeight: '500', color: '#c4c7c5', margin: '0' }}>How can I help you today?</p>
             </div>
           ) : (
-            <div className="space-y-10 pt-10">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <div className={`p-4 rounded-2xl max-w-full md:max-w-2xl ${msg.role === 'user' ? 'bg-[#f0f4f9] text-gray-800' : 'bg-white'}`}>
-                    {msg.role === 'ai' ? (
-                      <img src={msg.content} alt="AI" className="rounded-xl shadow-2xl border border-gray-100 w-full" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              {messages.map((m, i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+                  <div style={{ padding: '12px 20px', borderRadius: '20px', backgroundColor: m.role === 'user' ? '#f0f4f9' : 'transparent', maxWidth: '80%' }}>
+                    {m.role === 'ai' ? (
+                      <img src={m.content} style={{ borderRadius: '12px', width: '100%', maxWidth: '500px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} alt="AI generated" />
                     ) : (
-                      <p className="text-lg">{msg.content}</p>
+                      <p style={{ fontSize: '18px', margin: 0 }}>{m.content}</p>
                     )}
                   </div>
                 </div>
               ))}
-              {loading && (
-                <div className="flex items-center gap-4 text-blue-500 animate-pulse">
-                  <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="font-medium">Siyam AI is painting...</span>
-                </div>
-              )}
+              {loading && <div style={{ color: '#4285f4', fontWeight: '500' }}>Siyam AI is generating...</div>}
             </div>
           )}
         </div>
 
-        {/* Floating Input Area */}
-        <div className="absolute bottom-0 w-full p-4 md:p-10 bg-gradient-to-t from-white via-white to-transparent">
-          <div className="max-w-4xl mx-auto flex items-center bg-[#f0f4f9] p-2 md:p-4 rounded-full shadow-lg border border-transparent focus-within:border-blue-300 transition">
-            <button className="p-2 text-gray-500 hover:text-blue-600"><FaPlus /></button>
-            <select 
-              value={ratio} 
-              onChange={(e) => setRatio(e.target.value)}
-              className="bg-transparent text-sm text-gray-600 outline-none px-2 border-r border-gray-300 mr-2 cursor-pointer"
-            >
-              <option value="1:1">1:1</option>
-              <option value="16:9">16:9</option>
-              <option value="9:16">9:16</option>
+        {/* Input Area */}
+        <div style={{ padding: '20px 10%', backgroundColor: 'white' }}>
+          <div style={{ display: 'flex', alignItems: 'center', backgroundColor: '#f0f4f9', padding: '8px 20px', borderRadius: '32px', border: '1px solid transparent' }}>
+            <FaPlus style={{ color: '#5f6368', marginRight: '16px', cursor: 'pointer' }} />
+            <select value={ratio} onChange={(e) => setRatio(e.target.value)} style={{ background: 'none', border: 'none', borderRight: '1px solid #c4c7c5', marginRight: '12px', paddingRight: '8px', outline: 'none' }}>
+              <option>1:1</option><option>16:9</option><option>9:16</option>
             </select>
             <input 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && generateImage()}
-              placeholder="Ask Siyam ai..."
-              className="flex-1 bg-transparent border-none outline-none text-gray-800 px-2 text-lg"
+              placeholder="Ask Siyam ai..." 
+              style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: '16px', padding: '12px 0' }} 
             />
-            <button 
-              onClick={generateImage}
-              className="p-3 bg-black text-white rounded-full hover:scale-110 transition active:scale-95 ml-2 shadow-md"
-            >
+            <button onClick={generateImage} style={{ background: '#1f1f1f', color: 'white', border: 'none', borderRadius: '50%', width: '48px', height: '48px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', marginLeft: '12px' }}>
               <FaRocket />
             </button>
           </div>
-          <p className="text-[10px] md:text-xs text-center text-gray-400 mt-3">Siyam AI can make mistakes. All generations are professional grade.</p>
+          <p style={{ textAlign: 'center', fontSize: '12px', color: '#5f6368', marginTop: '12px' }}>Siyam AI can make mistakes. Professional grade images guaranteed.</p>
         </div>
       </main>
     </div>
