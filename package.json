@@ -1,8 +1,8 @@
 "dependencies": {
-  "firebase": "^10.11.0",
-  "react-icons": "^5.1.0",
-  "@gradio/client": "^0.1.4",
   "next": "latest",
   "react": "latest",
-  "react-dom": "latest"
-}
+  "react-dom": "latest",
+  "firebase": "^10.11.0",
+  "react-icons": "^5.1.0",
+  "@gradio/client": "^0.1.4"
+},
