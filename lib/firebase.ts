@@ -1,18 +1,18 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAs-G5uK9hGv-S-qO_e8vXpM7_v6eG-W8",
-  authDomain: "siyamai-bd7c3.firebaseapp.com",
-  projectId: "siyamai-bd7c3",
-  storageBucket: "siyamai-bd7c3.firebasestorage.app",
-  messagingSenderId: "542365451952",
-  appId: "1:542365451952:web:644a30349635b719069d6b"
+  apiKey: "AlzaSyAhc5CCT8CsNCcaKhiBQ7IoAlOuUKtSibI", // আপনার অরিজিনাল কী
+  authDomain: "siyamai-5a94c.firebaseapp.com",
+  projectId: "siyamai-5a94c",
+  storageBucket: "siyamai-5a94c.firebasestorage.app",
+  messagingSenderId: "941063493380",
+  appId: "1:941063493380:web:6fccb30bb84e385abb2251",
+  measurementId: "G-30EHVDHGLT"
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
+const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
