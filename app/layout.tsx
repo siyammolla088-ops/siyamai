@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Siyam AI",
+  description: "Professional Image Generation by Siyam",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -5,9 +13,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-      </head>
       <body>{children}</body>
     </html>
   );
