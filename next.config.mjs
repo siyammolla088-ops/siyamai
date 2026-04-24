@@ -4,9 +4,13 @@ const nextConfig = {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
+        fs: false,
         net: false,
         tls: false,
-        fs: false,
+        crypto: false,
+        path: false,
+        stream: false,
+        buffer: false, // এটি node:buffer এররটি সমাধান করবে
       };
     }
     return config;
