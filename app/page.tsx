@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Client } from "@gradio/client";
-import { FaRocket, FaPlus, FaPen, FaCog } from "react-icons/fa";
+import { FaRocket, FaPlus, FaPen, FaCog, FaHistory } from "react-icons/fa";
 import { BiUserCircle } from "react-icons/bi";
 
 export default function Home() {
@@ -9,152 +9,129 @@ export default function Home() {
   const [ratio, setRatio] = useState("1:1");
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [credits, setCredits] = useState(5); // ডেমো ক্রেডিট
+  const [credits, setCredits] = useState(5);
 
   const generateImage = async () => {
-    if (!prompt || credits <= 0) {
-      if (credits <= 0) alert("Get Credit! (Payment or Ads modal will show here)");
-      return;
-    }
-
+    if (!prompt || credits <= 0) return;
     setLoading(true);
-    setCredits((prev) => prev - 1); // ১ ক্রেডিট কেটে নেওয়া হলো
-    
-    // ইউজারের মেসেজ স্ক্রিনে দেখানো
+    setCredits((prev) => prev - 1);
     setMessages((prev) => [...prev, { role: "user", content: prompt }]);
     const userPrompt = prompt;
     setPrompt("");
 
     try {
-      // ইউজারের অজান্তে ভালো ছবি পাওয়ার জন্য প্রম্পট বড় করা হলো
-      const hiddenEnhancedPrompt = `${userPrompt}, 8k resolution, 4k, highly detailed, masterpiece, professional photography`;
-      
-      // আপনার স্পেস API কানেক্ট করা
+      const enhancedPrompt = `${userPrompt}, 8k resolution, highly detailed, masterpiece`;
       const client = await Client.connect("siyammolla404/Siyam");
-      const result = await client.predict("/generate_image", { 
-        prompt: hiddenEnhancedPrompt 
-      });
-      
-      // টাইপ এরর ফিক্স করতে (result.data as any) ব্যবহার করা হয়েছে
+      const result = await client.predict("/generate_image", { prompt: enhancedPrompt });
       // @ts-ignore
       const imageUrl = (result.data as any)[0]?.url || (result.data as any)[0];
-      
       setMessages((prev) => [...prev, { role: "ai", content: imageUrl }]);
     } catch (error) {
-      console.error("Error:", error);
-      setMessages((prev) => [...prev, { role: "ai", content: "Error generating image. Please try again." }]);
-      setCredits((prev) => prev + 1); // এরর হলে ক্রেডিট ফেরত দেওয়া
+      setMessages((prev) => [...prev, { role: "ai", content: "Error generating image." }]);
+      setCredits((prev) => prev + 1);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen bg-white text-gray-800 font-sans">
+    <div className="flex h-screen bg-white text-gray-900 font-sans overflow-hidden">
       
-      {/* Sidebar - History & Settings */}
-      <div className="w-72 bg-gray-50 border-r border-gray-200 hidden md:flex flex-col p-4 relative">
-        <div className="flex justify-between items-center mb-6">
-          <button className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-full font-medium transition">
-            <FaPen className="text-gray-600 text-sm" /> New Chat
-          </button>
+      {/* Sidebar - Desktop Only */}
+      <aside className="w-64 bg-[#f0f4f9] hidden md:flex flex-col p-4 border-r border-gray-200">
+        <button className="flex items-center gap-3 bg-[#e9eef6] hover:bg-[#dde3ea] p-3 rounded-xl transition mb-8 font-medium">
+          <FaPen className="text-gray-600" /> New Chat
+        </button>
+        <div className="flex-1 overflow-y-auto space-y-2">
+          <p className="text-sm font-semibold text-gray-500 px-2 uppercase tracking-wider">History</p>
+          <div className="flex items-center gap-3 p-2 hover:bg-[#dde3ea] rounded-lg cursor-pointer text-sm">
+            <FaHistory className="text-gray-400" /> Previous Task...
+          </div>
         </div>
+        <div className="mt-auto border-t border-gray-300 pt-4 space-y-3">
+          <div className="flex items-center gap-3 px-2">
+            <BiUserCircle className="text-3xl text-blue-600" />
+            <div className="overflow-hidden">
+              <p className="text-sm font-bold truncate">Siyam Molla</p>
+              <p className="text-xs text-blue-600">Credits: {credits}</p>
+            </div>
+          </div>
+          <button className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition">Get Credit</button>
+          <button className="flex items-center gap-2 text-gray-600 hover:text-black transition p-2 text-sm"><FaCog /> Settings</button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col relative h-full bg-white">
         
-        <div className="flex-1 overflow-y-auto">
-          <p className="text-xs font-semibold text-gray-500 mb-3 px-2">Recent</p>
-          {/* History items will go here */}
-        </div>
+        {/* Header - Siyam AI */}
+        <header className="p-4 flex justify-between items-center md:px-10">
+          <span className="text-xl font-bold text-gray-700">Siyam AI</span>
+          <div className="md:hidden text-2xl text-blue-600"><BiUserCircle /></div>
+        </header>
 
-        {/* User Profile & Credits Bottom Section */}
-        <div className="mt-auto border-t border-gray-200 pt-4">
-           <div className="flex items-center gap-3 px-2 mb-3">
-              <BiUserCircle className="text-3xl text-gray-600" />
-              <div>
-                <p className="font-semibold text-sm">siyammolla088@gmail.com</p>
-                <p className="text-xs text-blue-600 font-bold">Credits: {credits}</p>
-              </div>
-           </div>
-           <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 py-2 rounded-lg text-sm font-semibold transition mb-2">
-             Get Credit
-           </button>
-           <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-2 text-sm transition">
-             <FaCog /> Settings
-           </button>
-        </div>
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col relative">
-        {/* Header for Mobile */}
-        <div className="md:hidden p-4 text-xl font-bold text-gray-700 border-b">Siyam AI</div>
-
-        <div className="flex-1 overflow-y-auto p-4 md:px-32 lg:px-48 pb-32">
+        {/* Chat / Result Display */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-20 lg:px-40 pb-40">
           {messages.length === 0 ? (
-             <div className="h-full flex flex-col justify-center items-center text-center mt-[-50px]">
-               <h1 className="text-5xl font-medium bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent mb-4">
-                 Siyam AI
-               </h1>
-               <p className="text-xl text-gray-500">How can I help you create today?</p>
-             </div>
+            <div className="h-full flex flex-col justify-center items-center text-center">
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#4285f4] via-[#9b72cb] to-[#d96570] bg-clip-text text-transparent mb-4">
+                Hello, Siyam
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-400">Describe what you want to create today.</p>
+            </div>
           ) : (
-            <div className="space-y-8 mt-10">
+            <div className="space-y-10 pt-10">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`p-4 rounded-2xl max-w-xl ${msg.role === 'user' ? 'bg-gray-100 text-gray-800' : ''}`}>
+                <div key={i} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+                  <div className={`p-4 rounded-2xl max-w-full md:max-w-2xl ${msg.role === 'user' ? 'bg-[#f0f4f9] text-gray-800' : 'bg-white'}`}>
                     {msg.role === 'ai' ? (
-                       <img src={msg.content} alt="AI Generated" className="rounded-xl shadow-lg border border-gray-200" />
+                      <img src={msg.content} alt="AI" className="rounded-xl shadow-2xl border border-gray-100 w-full" />
                     ) : (
-                       msg.content
+                      <p className="text-lg">{msg.content}</p>
                     )}
                   </div>
                 </div>
               ))}
               {loading && (
-                <div className="flex justify-start items-center gap-3 p-4">
-                  <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-gray-500 font-medium">Siyam AI is generating...</span>
+                <div className="flex items-center gap-4 text-blue-500 animate-pulse">
+                  <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="font-medium">Siyam AI is painting...</span>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Input Area */}
-        <div className="absolute bottom-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-6 px-4 md:px-32 lg:px-48">
-          <div className="flex items-center bg-gray-100 p-2 md:p-3 rounded-full shadow-sm border border-gray-300 focus-within:ring-1 focus-within:ring-gray-400">
-            
-            <button className="p-3 text-gray-500 hover:text-gray-800 transition">
-              <FaPlus />
-            </button>
-            
+        {/* Floating Input Area */}
+        <div className="absolute bottom-0 w-full p-4 md:p-10 bg-gradient-to-t from-white via-white to-transparent">
+          <div className="max-w-4xl mx-auto flex items-center bg-[#f0f4f9] p-2 md:p-4 rounded-full shadow-lg border border-transparent focus-within:border-blue-300 transition">
+            <button className="p-2 text-gray-500 hover:text-blue-600"><FaPlus /></button>
             <select 
               value={ratio} 
               onChange={(e) => setRatio(e.target.value)}
-              className="bg-transparent text-sm text-gray-600 outline-none cursor-pointer border-r border-gray-300 pr-2 mr-2"
+              className="bg-transparent text-sm text-gray-600 outline-none px-2 border-r border-gray-300 mr-2 cursor-pointer"
             >
               <option value="1:1">1:1</option>
-              <option value="9:16">9:16</option>
               <option value="16:9">16:9</option>
+              <option value="9:16">9:16</option>
             </select>
-
             <input 
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && generateImage()}
-              className="flex-1 bg-transparent border-none outline-none text-gray-800 placeholder-gray-500 px-2 text-base md:text-lg"
               placeholder="Ask Siyam ai..."
+              className="flex-1 bg-transparent border-none outline-none text-gray-800 px-2 text-lg"
             />
-            
             <button 
-              onClick={generateImage} 
-              className="p-3 bg-black text-white rounded-full hover:bg-gray-800 transition shadow-md ml-2"
+              onClick={generateImage}
+              className="p-3 bg-black text-white rounded-full hover:scale-110 transition active:scale-95 ml-2 shadow-md"
             >
               <FaRocket />
             </button>
           </div>
-          <p className="text-center text-xs text-gray-400 mt-3">Siyam AI can make mistakes. Consider verifying important information.</p>
+          <p className="text-[10px] md:text-xs text-center text-gray-400 mt-3">Siyam AI can make mistakes. All generations are professional grade.</p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
