@@ -2,7 +2,6 @@
 const nextConfig = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // এটি ব্রাউজার সাইড বিল্ডের সময় নোড মডিউলগুলোকে ইগনোর করবে
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
