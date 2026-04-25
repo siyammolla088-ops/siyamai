@@ -7,7 +7,13 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
-        buffer: false,
+        buffer: false, // এটি node:buffer এররটি সমাধান করবে
+        crypto: false,
+        stream: false,
+        path: false,
+        http: false,
+        https: false,
+        zlib: false,
       };
     }
     return config;
