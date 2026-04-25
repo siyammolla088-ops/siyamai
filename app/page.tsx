@@ -30,15 +30,20 @@ export default function Home() {
     setMessages(prev => [...prev, { role: "user", content: currentPrompt }]);
 
     try {
-      // Dynamic import to avoid build errors
-      const { Client } = await import("@gradio/client");
       const finalPrompt = `${currentPrompt}, 8k, masterpiece, cinematic --ar ${ratio}`;
-      const client = await Client.connect("siyammolla404/Siyam");
-      const result = await client.predict("/generate_image", { prompt: finalPrompt });
       
-      // @ts-ignore
-      const imageUrl = result.data[0].url || result.data[0];
-      setMessages(prev => [...prev, { role: "ai", content: imageUrl }]);
+      // নতুন নিয়ম: Gradio এর বদলে আমাদের নিজেদের সার্ভার API কে কল করছি
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: finalPrompt })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error);
+
+      setMessages(prev => [...prev, { role: "ai", content: data.imageUrl }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: "ai", content: "Error: Image could not be generated." }]);
     } finally {
@@ -123,4 +128,4 @@ export default function Home() {
       </main>
     </div>
   );
-}
+                }
