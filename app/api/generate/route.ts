@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
-import { Client } from "@gradio/client";
+import { client } from "@gradio/client"; // 'Client' এর বদলে 'client' (ছোট হাতের)
 
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    // 서버 사이드에서 Gradio 연결 (여기서 실행하면 node:buffer 에러가 안 납니다!)
-    const client = await Client.connect("siyammolla404/Siyam");
-    const result = await client.predict("/generate_image", { prompt });
+    // এখানে কানেক্ট করার পদ্ধতিটি একটু পরিবর্তন হয়েছে
+    const app = await client("siyammolla404/Siyam");
+    const result = await app.predict("/generate_image", { 
+      prompt: prompt 
+    });
 
     // @ts-ignore
     const imageUrl = result.data[0]?.url || result.data[0];
