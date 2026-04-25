@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { client } from "@gradio/client"; // 'Client' এর বদলে 'client' (ছোট হাতের)
+import { client } from "@gradio/client";
 
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    // এখানে কানেক্ট করার পদ্ধতিটি একটু পরিবর্তন হয়েছে
     const app = await client("siyammolla404/Siyam");
-    const result = await app.predict("/generate_image", { 
-      prompt: prompt 
-    });
+    
+    // এখানে পরিবর্তন: অবজেক্টের বদলে অ্যারে [prompt] ব্যবহার করা হয়েছে
+    const result = await app.predict("/generate_image", [prompt]);
 
     // @ts-ignore
     const imageUrl = result.data[0]?.url || result.data[0];
